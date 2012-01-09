@@ -1,0 +1,21 @@
+#!/bin/bash
+declare -x awk="/usr/bin/awk"
+declare -x dscl="/usr/bin/dscl"
+declare -x mv="/bin/mv"
+declare -x id="/usr/bin/id"
+declare -x dscacheutil="/usr/bin/dscacheutil"
+declare -x createmobilehome="/System/Library/CoreServices/ManagedClient.app/Contents/Resources/createmobileaccount"
+for USER_NAME in `$dscl . -list /Users AuthenticationAuthority | awk '/LocalCachedUser/{print $1}'` ; do
+	declare GUID="`$dscl . -read /Users/$USER_NAME GeneratedUID | $awk '/GeneratedUID/{print $2}'`"
+	declare AD_USER_WITH_GUID="$($dscl /Active\ Directory/All\ Domains -search /Users GeneratedUID $GUID |
+				$awk '/=/{print $1;exit}')"
+	# Check if the user is the same but name has been updated
+	$id "$AD_USER_WITH_GUID" || continue	
+	if [ "$USER_NAME" != "$AD_USER_WITH_GUID" ] ; then
+		echo "The usernames DONT match :$USER_NAME / $AD_USER_WITH_GUID"
+		$mv "/Users/$USER_NAME" "/Users/$AD_USER_WITH_GUID"
+		$dscl . -delete "/Users/$USER_NAME"
+		$createmobilehome -n "$AD_USER_WITH_GUID"		
+		$dscacheutil -flushcache
+	fi
+done

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-script minSpecVersion="1.000000" authoringTool="com.apple.PackageMaker" authoringToolVersion="3.0.4" authoringToolBuild="179">
+    <title>Fix Renamed Users</title>
+    <options customize="never" allow-external-scripts="no" rootVolumeOnly="false"/>
+    <domains enable_anywhere="true" enable_localSystem="true"/>
+    <choices-outline>
+        <line choice="choice0"/>
+    </choices-outline>
+    <choice id="choice0" title="Fix Rename Files">
+        <pkg-ref id="org.thompsonschools.fixRenamedUsers.FixRenameFiles.pkg"/>
+    </choice>
+    <pkg-ref id="org.thompsonschools.fixRenamedUsers.FixRenameFiles.pkg" installKBytes="0" version="1.1" auth="Root" onConclusion="RequireLogout">file:./Contents/Packages/fixRenameFiles.pkg</pkg-ref>
+</installer-script>
